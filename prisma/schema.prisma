@@ -1,0 +1,50 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define the Product table
+model Product {
+  product_id   Int      @id @default(autoincrement())
+  category_id  Int 
+  product_name String @db.VarChar(100) @unique
+  price        Float
+  category     Category @relation(fields: [category_id], references: [category_id])
+}
+
+// Define the Category table
+model Category {
+  category_id   Int       @id @default(autoincrement())
+  category_name String    @db.VarChar(50)  @unique
+  products      Product[] // One-to-many relationship with Product
+}
+
+// Define the Order table
+model Order {
+  order_id    Int      @id @default(autoincrement())
+  customer_id Int
+  product_id  Int
+  order_total Float
+  order_qty   Int
+  order_date  DateTime @db.Date
+  // Define other fields related to order
+
+  // Define the relationship with the Customer table
+  customers Customer @relation(fields: [customer_id], references: [customer_id])
+}
+
+// Define the Customer table
+model Customer {
+  customer_id          Int      @id @default(autoincrement())
+  first_name  String @db.VarChar(100)
+  last_name   String @db.VarChar(100)
+  birth_date  DateTime @db.Date
+  money_spent Float
+  // Define other fields related to customer
+  Order       Order[]
+}
